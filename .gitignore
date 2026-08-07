@@ -9,3 +9,6 @@ node_modules/
 
 # 旧设计参考图（已废弃）
 design.png
+
+# 部署产物（可由 roll-seeds.html 重新生成）
+dist/

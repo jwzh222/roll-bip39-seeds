@@ -49,6 +49,20 @@ npm test        # test.js（语法/SHA-256/BIP39 向量）+ e2e.js（jsdom 端�
 
 `build.js` 幂等：无论首次构建还是对已构建的成品重建，都从 `wordlists/*.txt` 生成一致的 `roll-seeds.html`（可校验哈希确认无意外改动）。
 
+## 部署到公网（静态托管）
+
+应用是**单文件 HTML**，任何静态托管都能直接运行：
+
+```bash
+# 生成部署目录（把 roll-seeds.html 复制为 index.html / 404.html）
+mkdir -p dist && cp roll-seeds.html dist/index.html && cp roll-seeds.html dist/404.html
+```
+
+- **Netlify Drop（最简单，无需命令行）**：打开 <https://app.netlify.com/drop>，把 `dist/` 文件夹拖进页面，即可获得一个公开 URL。
+- **Cloudflare Pages**：Dashboard → Workers & Pages → 创建 → 直接上传 `dist/`。
+- **Vercel**：`npx vercel`（首次需登录账号）。
+- 部署后请仍提醒使用者：**正式使用请下载单文件后完全离线运行**。
+
 ## 文件
 
 | 文件 | 说明 |
