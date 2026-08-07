@@ -1,76 +1,76 @@
-# roll-seeds · 掷骰子 / 掷硬币生成 BIP39 助记词（离线单页）
+# Roll Seeds · Generate BIP39 Mnemonics with Physical Dice / Coin Flips (Offline)
 
 > **Roll Seeds** — Generate a secure BIP39 mnemonic from physical dice or coin flips, 100% offline.
 > One self-contained HTML file, double-click to run, zero network requests.
 
-用**真实的硬币或骰子**，在完全离线的情况下生成安全的 BIP39 助记词。单文件 `roll-seeds.html`，双击即可运行，全程无网络请求。
+Create a secure BIP39 mnemonic using **real coins or dice**, fully offline. The single-file `roll-seeds.html` runs by double-clicking it — no network requests are ever made.
 
-界面按 Figma 设计稿重做，**纯英文**、紧凑排版（尽量一屏看完投掷 → 单词 → 助记词的完整流程）。支持 **10 种 BIP39 词表语言**（英语默认、简体/繁体中文、法语、西班牙语、意大利语、葡萄牙语、日语、韩语、捷克语）。
+The UI was redesigned from a Figma mockup: clean English, compact layout (aims to fit the whole flow — roll → words → mnemonic — on one screen). Supports **10 BIP39 wordlist languages** (English by default, plus Simplified/Traditional Chinese, French, Spanish, Italian, Portuguese, Japanese, Korean, Czech).
 
-## 使用
+## Usage
 
-1. 下载 / 打开 `roll-seeds.html`，**关闭 Wi-Fi / 拔掉网线**后使用。
-2. 选「12 词」或「24 词」，选「硬币」或「骰子」（默认硬币）。
-3. 用真实硬币 / 骰子投掷，点页面对应图示记录结果（也可键盘输入，或直接**粘贴**一串二进制/数字批量输入）：
-   - 硬币：正面 → `0`，反面 → `1`
-   - 骰子（奇偶法）：奇数 `1/3/5` → `0`，偶数 `2/4/6` → `1`
-   - 输入区每 **11 位自动空一格**，便于复制核对；输入不合法会在输入框上方红色提示（硬币只能 0/1、骰子只能 1–6）
-   - `Backspace` 撤销上一步；状态栏实时显示进度 `Bits: 0/128` 或 `0/256`，以及基于已输入熵位的 `Time To Crack` 估算
-   - **点击**硬币/骰子图片属于"浏览器模拟"，会收到逐级强化的提醒（第 1–3 次温和提示、第 4 次起提醒掷实体骰子、第 10 次起严厉版本）——正式钱包请务必使用桌面上的实体硬币 / 骰子
-4. 每个字块固定渲染 11 个槽位（未输入时显示占位横杠 `-`），每凑满 **11 位**即时渲染一个单词并附上**词表序号**（如 `#2794`，方便对照纸版词表核验）；`Raw Binary` 块实时显示已输入的原始二进制串，其上方贴着一行硬币/骰子映射说明。
-5. 填满后最后一个单词由「剩余熵位 + 校验和（SHA-256 前 4/8 位）」自动确定（末词卡带 `CSUM` 徽标与 "Checksum calculated ✓"），助记词在下方自动生成。
-6. 用笔抄写保存，**先小额测试**再转大额。
+1. Download / open `roll-seeds.html` — **turn off Wi-Fi / unplug the network** before use.
+2. Pick **12 or 24 words**, then **Coin or Dice** (default: coin).
+3. Roll a real coin/die and click the matching face to record each result (keyboard input, or **paste** a string of bits/digits, also works):
+   - Coin: heads → `0`, tails → `1`
+   - Dice (parity): odd `1/3/5` → `0`, even `2/4/6` → `1`
+   - The input auto-groups every **11 bits with a space** for easy copy/verification; invalid input shows a red hint above the box (coin: only 0/1, dice: only 1–6)
+   - `Backspace` undoes the last roll; the status bar shows live progress `Bits: 0/128` or `0/256` and an estimated `Time To Crack`
+   - **Clicking** the coin/dice images counts as *browser simulation* and triggers progressively stronger reminders (mild for the first 3 clicks, from the 4th it urges you to roll a real die, from the 10th it gets blunt) — for a real wallet, always roll a physical coin/die on your desk
+4. Every word block renders 11 slots (unfilled slots show `-` placeholders); as soon as **11 bits** are complete, a word renders together with its **wordlist index** (e.g. `#2794`) so you can cross-check against a paper wordlist; the `Raw Binary` block shows the raw bit stream, with the coin/dice mapping printed just above it.
+5. The final word is determined by the remaining entropy + **checksum** (first 4/8 bits of SHA-256) — the last word card shows a `CSUM` badge and "Checksum calculated ✓"; the mnemonic appears below.
+6. Write it down on paper, and **test with a small amount first** before moving larger funds.
 
-页面**不保存任何输入**：关闭页面后所有投掷数据即被清空，也不会写入 `localStorage`（启动时会顺带清除旧版本可能残留的存档）。
+The page **never persists any input**: closing the page clears all roll data, and nothing is written to `localStorage` (on load it also clears any legacy saved state).
 
-## 算法
+## Algorithm
 
-- 硬币 / 骰子 → 1 位（硬币：正反；骰子：奇偶）。12 词需 128 位熵、24 词需 256 位熵。
-- 每 11 位 = 1 个词。最后一个词 = 剩余熵位 + 校验和（`SHA-256(熵)` 前 4/8 位）。
-- SHA-256 为页面内嵌的纯 JS 实现，页面加载时用官方测试向量自检；词库加载时检查 2048 词无重复。
+- Coin / dice → 1 bit (coin: heads/tails; dice: parity). 12 words need 128 bits of entropy, 24 words need 256.
+- Every 11 bits = one word. The last word = remaining entropy bits + checksum (`SHA-256(entropy)` first 4/8 bits).
+- SHA-256 is a pure in-page JS implementation, self-checked at load against official test vectors; wordlists are checked for 2048 unique words.
 
-## 诚实的安全声明
+## Honest Security Notes
 
-- 工具**不创造熵**，只把硬币/骰子的物理随机转换成助记词。掷具严重有偏或过程不私密都会降低安全强度。
-- 硬币 / 骰子 1 次只贡献 1 位。若怀疑掷具有偏，可多掷几次，或用官方词表做公平性检验。
+- This tool does **not create entropy** — it converts the physical randomness of your coin/die into a mnemonic. A biased die or a non-private process weakens security.
+- A coin/die contributes only 1 bit per toss. If you suspect bias, roll more, or test your coin/die against an official wordlist for fairness.
 
-## 代码来源
+## Sources
 
-- 10 种语言的 BIP39 词表取自 [bitcoin/bips](https://github.com/bitcoin/bips) 官方（`bip-0039/*.txt`），由 `build.js` 注入页面。
-- SHA-256 为内嵌纯 JS 实现（离线可用），用 [NIST 测试向量](https://www.nist.gov/)（`""`、`"abc"`、`"test"`）自检。
+- The 10 BIP39 wordlists come from the official [bitcoin/bips](https://github.com/bitcoin/bips) repo (`bip-0039/*.txt`), injected by `build.js`.
+- SHA-256 is an embedded pure-JS implementation (offline-safe), self-checked against [NIST test vectors](https://www.nist.gov/) (`""`, `"abc"`, `"test"`).
 
-## 开发
+## Development
 
 ```bash
-npm install     # 安装 jsdom（仅测试用，不进入产物）
-npm run build   # 从 wordlists/*.txt 重建 roll-seeds.html（幂等，可重复执行）
-npm test        # test.js（语法/SHA-256/BIP39 向量）+ e2e.js（jsdom 端到端 UI 流程）
+npm install     # installs jsdom (test-only, not shipped)
+npm run build   # rebuilds roll-seeds.html from wordlists/*.txt (idempotent)
+npm test        # test.js (syntax / SHA-256 / BIP39 vectors) + e2e.js (jsdom end-to-end UI)
 ```
 
-`build.js` 幂等：无论首次构建还是对已构建的成品重建，都从 `wordlists/*.txt` 生成一致的 `roll-seeds.html`（可校验哈希确认无意外改动）。
+`build.js` is idempotent: whether building fresh or re-building an already-built artifact, it produces an identical `roll-seeds.html` from `wordlists/*.txt` (verify with a hash to confirm no unexpected changes).
 
-## 部署到公网（静态托管）
+## Deploy (static hosting)
 
-应用是**单文件 HTML**，任何静态托管都能直接运行：
+The app is a **single HTML file**, so any static host can serve it:
 
 ```bash
-# 生成部署目录（把 roll-seeds.html 复制为 index.html / 404.html）
+# Prepare a deploy folder (copy roll-seeds.html to index.html / 404.html)
 mkdir -p dist && cp roll-seeds.html dist/index.html && cp roll-seeds.html dist/404.html
 ```
 
-- **Netlify Drop（最简单，无需命令行）**：打开 <https://app.netlify.com/drop>，把 `dist/` 文件夹拖进页面，即可获得一个公开 URL。
-- **Cloudflare Pages**：Dashboard → Workers & Pages → 创建 → 直接上传 `dist/`。
-- **Vercel**：`npx vercel`（首次需登录账号）。
-- 部署后请仍提醒使用者：**正式使用请下载单文件后完全离线运行**。
+- **Netlify Drop (easiest, no CLI)**: open <https://app.netlify.com/drop> and drag the `dist/` folder in — you get a public URL instantly.
+- **Cloudflare Pages**: Dashboard → Workers & Pages → Create → direct-upload `dist/`.
+- **Vercel**: `npx vercel` (login required on first use).
+- After deploying, still remind users: **for real use, download the single file and run it fully offline.**
 
-## 文件
+## Files
 
-| 文件 | 说明 |
+| File | Description |
 |---|---|
-| `roll-seeds.html` | **交付物**：可离线双击运行的单文件应用（界面按 Figma 设计稿；内嵌 Inter / JetBrains Mono 字体与硬币图，均以 data URI 打包，零运行时联网） |
-| `build.js` | 构建：`wordlists/*.txt` → 注入 `roll-seeds.html`（幂等） |
-| `wordlists/*.txt` | 10 种语言 BIP39 词表（官方来源） |
-| `test.js` | 语法 / SHA-256 向量 / BIP39 官方向量 / 词库完整性 |
-| `e2e.js` | jsdom 端到端 UI 测试（默认值、图片输入、奇偶法、末词、语言、警告分级、24 词） |
+| `roll-seeds.html` | **Deliverable**: self-contained offline single-file app (Figma-designed UI; Inter / JetBrains Mono fonts and coin art embedded as data URIs, zero runtime networking) |
+| `build.js` | Build: injects `wordlists/*.txt` into `roll-seeds.html` (idempotent) |
+| `wordlists/*.txt` | 10 BIP39 wordlists (official sources) |
+| `test.js` | Syntax / SHA-256 vectors / official BIP39 vectors / wordlist integrity |
+| `e2e.js` | jsdom end-to-end UI tests (defaults, image input, parity, final word, languages, warning levels, 24 words) |
 
-> 界面设计源：Figma `roll-seeds`（`sndzvJtBhCCCaFCLxDvEPG`）。字体为 OFL 许可（Inter / JetBrains Mono），仅 latin 子集内嵌，词表为中文时回退到系统 CJK 字体。
+> UI design source: Figma `roll-seeds` (`sndzvJtBhCCCaFCLxDvEPG`). Fonts are OFL-licensed (Inter / JetBrains Mono), embedded as latin subsets only; CJK wordlists fall back to system fonts.
