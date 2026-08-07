@@ -1,0 +1,13 @@
+{
+  "name": "roll-seeds",
+  "version": "1.0.0",
+  "description": "掷骰子/掷硬币离线生成 BIP39 助记词（单页 HTML，10 种语言，所见即所得）",
+  "private": true,
+  "scripts": {
+    "build": "node build.js",
+    "test": "node test.js && node e2e.js"
+  },
+  "devDependencies": {
+    "jsdom": "^30.0.1"
+  }
+}
