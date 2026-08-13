@@ -131,12 +131,21 @@ body {
   box-shadow: inset 0 2px 4px 1px rgba(0, 0, 0, .05);
   transition: border-color .15s;
 }
-.inputbox:focus {
+.inputbox:focus-within {
   outline: none; border-color: var(--accent);
   box-shadow: inset 0 2px 4px 1px rgba(0, 0, 0, .05), 0 0 0 3px rgba(15, 23, 42, .1);
 }
 .rolls { font-family: var(--font-mono); font-size: 15px; color: var(--ink); line-height: 1.6; word-break: break-all; }
 .placeholder { position: absolute; left: 12px; top: 10px; color: var(--ink-3); font-size: 12.5px; pointer-events: none; }
+/* 透明覆盖层输入框：让移动端能唤出软键盘；桌面端行为不变 */
+.inputfield {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  border: 0; outline: none; background: transparent; padding: 0; margin: 0;
+  color: transparent; caret-color: transparent; font-size: 16px;
+  font-family: inherit;
+  pointer-events: none; /* 点击交给外层容器，focus 由 JS 完成，桌面端仍可选中复制数字 */
+}
+.inputfield:focus { outline: none; }
 
 /* ---------- 状态栏 ---------- */
 .inputbar {
@@ -297,9 +306,10 @@ body {
         <div class="choices" id="choices"></div>
         <div class="inputerr" id="inputError" style="display:none;"></div>
         <div class="inputwarn" id="inputWarn" style="display:none;"></div>
-        <div class="inputbox" id="inputbox" tabindex="0" role="textbox" aria-label="Roll input">
+        <div class="inputbox" id="inputbox" role="textbox" aria-label="Roll input">
           <div class="rolls" id="rolls"></div>
           <div class="placeholder" id="inputPlaceholder"></div>
+          <input class="inputfield" id="inputField" type="text" inputmode="numeric" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="Roll input" tabindex="0">
         </div>
         <div class="inputbar">
           <div class="crack">
@@ -712,11 +722,15 @@ $('choices').addEventListener('click', e => {
   simClicks++;
   showSimWarning();
   addRoll(parseInt(btn.dataset.val, 10));
-  $('inputbox').focus();
+  $('inputField').focus();
 });
-$('inputbox').addEventListener('keydown', e => {
+// 点击输入框任意位置都把焦点交给真实 input（移动端唤出软键盘）
+$('inputbox').addEventListener('click', e => {
+  $('inputField').focus();
+});
+$('inputField').addEventListener('keydown', e => {
   if (e.key === 'Backspace' || e.key === 'Delete') { e.preventDefault(); undoRoll(); return; }
-  if (e.key === 'Escape') { $('inputbox').blur(); return; }
+  if (e.key === 'Escape') { $('inputField').blur(); return; }
   if (/^[0-9]$/.test(e.key)) {
     e.preventDefault();
     const v = parseInt(e.key, 10);
@@ -725,8 +739,21 @@ $('inputbox').addEventListener('keydown', e => {
     else { showInputError(); shake(); }
   }
 });
+// 兜底：个别移动端软键盘不触发 keydown 时，从 input 事件取值
+$('inputField').addEventListener('input', e => {
+  const el = e.target;
+  const v = el.value.replace(/\D/g, '');
+  el.value = '';
+  if (!v) return;
+  for (const ch of v) {
+    const n = parseInt(ch, 10);
+    const valid = state.source === 'coin' ? (n === 0 || n === 1) : (n >= 1 && n <= 6);
+    if (valid) addRoll(n);
+    else { showInputError(); shake(); }
+  }
+});
 // 直接粘贴二进制 / 数字序列作为熵输入
-$('inputbox').addEventListener('paste', e => {
+$('inputField').addEventListener('paste', e => {
   e.preventDefault();
   const text = (e.clipboardData || window.clipboardData).getData('text') || '';
   const clean = text.replace(/\s/g, '');
@@ -740,7 +767,7 @@ $('inputbox').addEventListener('paste', e => {
   }
   if (added) toast('Pasted ' + added + ' entropy bits');
   render();
-  $('inputbox').focus();
+  $('inputField').focus();
 });
 
 /* ============ 提示 / 自检 ============ */
@@ -781,7 +808,7 @@ function shake() {
 // 本工具不持久化任何熵数据；顺带清除旧版本可能残留的 localStorage
 try { localStorage.removeItem('roll-seeds-state-v1'); } catch (e) {}
 render();
-$('inputbox').focus();
+$('inputField').focus();
 
 </script>
 </body>
