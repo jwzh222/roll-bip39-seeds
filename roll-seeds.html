@@ -67,7 +67,8 @@ body {
 .title h1 { font-size: 30px; font-weight: 400; color: var(--accent); text-align: center; line-height: 34px; }
 
 /* ---------- 配置区（三列） ---------- */
-.config { display: flex; gap: 20px; margin-bottom: 18px; }
+/* 桌面端：左缘与输入框对齐（标签列 88px + 行间距 16px），移动端在媒体查询中重置 */
+.config { display: flex; gap: 20px; margin-bottom: 18px; margin-left: 104px; }
 .cfg { flex: 1; min-width: 0; }
 .cfg-label { font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
 .seg {
@@ -288,7 +289,7 @@ body {
   .warnbar { margin: 0 6px; }       /* 红色警示条左缘与输入框左缘对齐 */
 }
 @media (max-width: 900px) {
-  .config { flex-direction: column; gap: 14px; }
+  .config { flex-direction: column; gap: 14px; margin-left: 0; }
   .row { flex-direction: column; gap: 6px; margin-top: 14px; }
   .row-label { width: auto; text-align: left; padding-top: 0; }
   .row-body { width: 100%; }
