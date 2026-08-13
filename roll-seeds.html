@@ -291,10 +291,13 @@ body {
   .config { flex-direction: column; gap: 14px; }
   .row { flex-direction: column; gap: 6px; margin-top: 14px; }
   .row-label { width: auto; text-align: left; padding-top: 0; }
+  .row-body { width: 100%; }
+  .choices { justify-content: center; flex-wrap: nowrap; gap: 4px; }
+  .choice { flex: 1; min-width: 0; padding: 4px 2px 3px; gap: 1px; }
+  .choice .coinimg, .choice .coinimg img, .choice svg { width: 100%; height: auto; max-width: 44px; }
+  .choice .tag { font-size: 10px; }
   .warnbar { font-size: 11px; }
   .title h1 { font-size: 24px; }
-  /* 骰子/硬币：固定每行 3 个，6 个骰子分两行；容器满宽居中，避免初始重排 */
-  .choices { display: grid; width: 100%; grid-template-columns: repeat(3, max-content); gap: 10px; justify-content: center; justify-items: center; padding: 4px 0 8px; }
 }
 @media (max-width: 560px) {
   .page { padding: 8px 2px 14px; }  /* 手机端更紧凑：输入框左右边线几乎贴屏幕边 */
@@ -304,8 +307,8 @@ body {
   .inputbar { flex-wrap: wrap; }
   /* 手机上 Words 区只露出约 1.5 行，超出的纵向滚动；当前行自动滚到第一排 */
   .wordgrid { max-height: 150px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-  .choice { min-width: 0; padding: 5px 8px 4px; }
-  .choice .coinimg, .choice .coinimg img, .choice svg { width: 52px; height: 52px; }
+  .choice { min-width: 0; padding: 3px 1px 2px; }
+  .choice .coinimg, .choice .coinimg img, .choice svg { width: 100%; height: auto; max-width: 40px; }
 }
 
 </style>
