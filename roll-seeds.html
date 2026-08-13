@@ -3259,7 +3259,7 @@ function deriveAddresses(mnemonic, passphrase) {
   return { seed: bytesToHex(seed), addresses };
 }
 /* ============ 状态 ============ */
-const state = { wordCount: 12, source: 'coin', lang: 'en', rolls: [], addrSel: 0 };
+const state = { wordCount: 12, source: 'dice', lang: 'en', rolls: [], addrSel: 0 };
 const $ = id => document.getElementById(id);
 
 function entropyNeeded() { return state.wordCount === 12 ? 128 : 256; }
